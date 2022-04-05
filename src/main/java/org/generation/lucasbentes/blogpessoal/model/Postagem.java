@@ -42,7 +42,13 @@ public class Postagem {
 	@ManyToOne  // Ele faz a comunicacao com a chave estrangeira. Informa que esse e de muitos para um
 	@JsonIgnoreProperties("postagem")  //Faz com que pare de apresentar infromacoes json apartir de um determinado atributo
 	private Tema tema;
+	
+	@ManyToOne
+	@JsonIgnoreProperties("postagem")
+	private Usuario usuario;
 
+	
+	
 	
 	// Os metodos, get's set's
 	
@@ -85,7 +91,13 @@ public class Postagem {
 	public void setTema(Tema tema) {
 		this.tema = tema;
 	}
-	
-	
 
+	public Usuario getUsuario() {
+		return usuario;
+	}
+
+	public void setUsuario(Usuario usuario) {
+		this.usuario = usuario;
+	}
+	
 }
