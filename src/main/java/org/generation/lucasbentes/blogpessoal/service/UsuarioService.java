@@ -33,6 +33,8 @@ public class UsuarioService {
 		
 	}
 	
+	
+	
 	// Metodo de loging
 	public Optional<UsuarioLogin> autenticarUsuario(Optional<UsuarioLogin> usuarioLogin){
 		
@@ -56,6 +58,7 @@ public class UsuarioService {
 		return Optional.empty();
 		
 	}
+	
 	
 	
 	//######## funcoes #######

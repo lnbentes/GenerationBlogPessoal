@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController // Da as permicoes para que essa class seja controller
 @RequestMapping("/postagens")  // Informa qual url essa class sera acessada
-@CrossOrigin(origins = "*")  // Faz com que o frontend consiga consumir nossa api. O * informa que a nossa api pode ser acessada de qualquer origin
+@CrossOrigin(origins = "*", allowedHeaders = "*")  // Faz com que o frontend consiga consumir nossa api. O * informa que a nossa api pode ser acessada de qualquer origin
 public class PostagemController {
 	
 	@Autowired  // Faz com que o spring acesse a interface do controle

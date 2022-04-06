@@ -41,8 +41,8 @@ public class BasicSecurityConfig extends WebSecurityConfigurerAdapter{
 	protected void configure(HttpSecurity http) throws Exception{  // Criando uma porta de acesso atraves de cadastro e loging
 		
 		http.authorizeRequests()
-		.antMatchers("/usuarios/logar").permitAll()
-		.antMatchers("/usuarios/cadastrar").permitAll()
+		.antMatchers("/usuario/logar").permitAll()
+		.antMatchers("/usuario/cadastrar").permitAll()
 		.antMatchers(HttpMethod.OPTIONS).permitAll()
 		.anyRequest().authenticated()
 		.and().httpBasic()
