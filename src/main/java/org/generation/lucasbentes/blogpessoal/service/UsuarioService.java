@@ -8,8 +8,10 @@ import org.generation.lucasbentes.blogpessoal.model.Usuario;
 import org.generation.lucasbentes.blogpessoal.model.UsuarioLogin;
 import org.generation.lucasbentes.blogpessoal.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class UsuarioService {
@@ -19,7 +21,6 @@ public class UsuarioService {
 	
 	
 	public Optional<Usuario> cadastraUsuario(Usuario usuario){
-		
 		// Verificar se a um usuario no db
 		if(usuarioRepository.findByUsuario(usuario.getUsuario()).isPresent()){
 			return Optional.empty();  // Se ouver retona vazio			
@@ -30,14 +31,13 @@ public class UsuarioService {
 		
 		// Depois de criptogravar a senha ele vai salvar o usurio novo
 		return Optional.of(usuarioRepository.save(usuario));
-		
+	
 	}
 	
 	
 	
 	// Metodo de loging
 	public Optional<UsuarioLogin> autenticarUsuario(Optional<UsuarioLogin> usuarioLogin){
-		
 		// Verificando se a variavel usuarioLogin existe e armazenando a resposta na variavel usuario
 		Optional<Usuario> usuario = usuarioRepository.findByUsuario(usuarioLogin.get().getUsuario());
 		
@@ -47,10 +47,10 @@ public class UsuarioService {
 				usuarioLogin.get().setId(usuario.get().getId());
 				usuarioLogin.get().setNome(usuario.get().getNome());
 				usuarioLogin.get().setFoto(usuario.get().getFoto());
-				usuarioLogin.get().setSenha(usuario.get().getSenha());
 				usuarioLogin.get().setToken(geradorBasicToken(usuarioLogin.get().getUsuario(), usuarioLogin.get().getSenha()));
+				usuarioLogin.get().setSenha(usuario.get().getSenha());
 				
-				// Depois que o usuarioLogin foi verificado e recebeu todos os dados vou retorna ele com o novo token de acesso
+				// Depois que o usuarioLogin foi verificado e recebeu todos os dados vai retorna ele com o novo token de acesso
 				return usuarioLogin;
 			}
 		}
@@ -58,6 +58,31 @@ public class UsuarioService {
 		return Optional.empty();
 		
 	}
+	
+	// Mudar a senha do usuario
+	public Optional<Usuario> atualizarUsuario (Usuario usuario) {   
+		
+		// Verificar se ele esta no sistema
+		if (usuarioRepository.findById(usuario.getId()).isPresent()) {     
+			
+			//Chamar o user que esta no banco
+			Optional<Usuario> cadeUsuario = usuarioRepository.findByUsuario(usuario.getUsuario());
+			
+			// Verificar se as senha sao iguais
+			if ((cadeUsuario.isPresent()) && (cadeUsuario.get().getId() != usuario.getId())) {
+				throw new ResponseStatusException( HttpStatus.BAD_REQUEST, "Já existente",null);
+			}
+			 
+			// Se for diferente atualizar para a nova
+			usuario.setSenha(criptografarSenha(usuario.getSenha()));      
+			
+			// Salvando as modificacoes
+			return Optional.of(usuarioRepository.save(usuario));     
+			}
+		
+		return Optional.empty(); 
+		}
+	
 	
 	
 	
