@@ -17,27 +17,40 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @Entity
 @Table(name = "tb_usuario")
 public class Usuario {
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	
-	
+
 	private String nome;
-	
-	@Email  // Vai validar que o dado e um email
-	private String usuario;  // Vai ser o email, nao foi usado o nome email para para security pois e uma palavra reservada
-	
+
+	@Email // Vai validar que o dado e um email
+	private String usuario; // Vai ser o email, nao foi usado o nome email para para security pois e uma
+							// palavra reservada
+
 	@NotNull
 	private String senha;
-	
+
 	private String foto;
-	
-	@OneToMany(mappedBy = "usuario", cascade = CascadeType.REMOVE)  //O remove indica se um usuario for deletado as postagem vao juntos
+
+	@OneToMany(mappedBy = "usuario", cascade = CascadeType.REMOVE) // O remove indica se um usuario for deletado as
+																	// postagem vao juntos
 	@JsonIgnoreProperties("usuario")
 	private List<Postagem> postagem;
-	
-	
+
+	// O custrutor para o tester, vamos usar dois um cheio e um vazio
+	// Tem que usar os atributos em ordem como esta a cima
+	public Usuario(Long id, String nome, String usuario, String senha, String foto) {
+		this.id = id;
+		this.nome = nome;
+		this.usuario = usuario;
+		this.senha = senha;
+		this.foto = foto;
+	}
+
+	// Costrutor vazio
+	public Usuario() {
+	}
 
 	public Long getId() {
 		return id;
