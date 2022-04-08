@@ -2,6 +2,8 @@ package org.generation.lucasbentes.blogpessoal.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.util.Optional;
+
 import org.generation.lucasbentes.blogpessoal.model.Usuario;
 import org.generation.lucasbentes.blogpessoal.service.UsuarioService;
 import org.junit.jupiter.api.DisplayName;
@@ -18,6 +20,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -25,7 +28,7 @@ import org.springframework.http.ResponseEntity;
 public class UsuarioControllerTest {
 
 	@Autowired
-	private UsuarioService usuarioServece;
+	private UsuarioService usuarioService;
 	
 	// O TestRest vai fazer os test http, put, get... E ele e so usado no testController
 	@Autowired
@@ -62,7 +65,7 @@ public class UsuarioControllerTest {
 	public void naoDuplicarUsuario() {
 		
 		// INcluindo um usuario na memorio
-		usuarioServece.cadastraUsuario(new Usuario(0L, "joao toso", "joao@toso.com", "67890", "https://i.imgur.com/FETvs2O.jpg"));
+		usuarioService.cadastraUsuario(new Usuario(0L, "joao toso", "joao@toso.com", "67890", "https://i.imgur.com/FETvs2O.jpg"));
 		
 		//Tentando cadastar o mesmo usuario
 		HttpEntity<Usuario> requisicao = new HttpEntity<Usuario>(new Usuario(0L, "joao toso", "joao@toso.com", "67890", "https://i.imgur.com/FETvs2O.jpg"));
@@ -72,5 +75,50 @@ public class UsuarioControllerTest {
 		assertEquals(HttpStatus.BAD_REQUEST, resposta.getStatusCode());
 		
 	}
+	
+	@Test
+    @Order(3)
+    @DisplayName("Alterar um usuário")
+    public void deveAtualizarUmUsuario() {
+
+        Optional<Usuario> usuarioCreate = usuarioService.cadastraUsuario(new Usuario(
+                0L, "Louro Jose", "papagaio@email.com", "anamariabraga", "https://i.imgur.com/FETvs2O.jpg"));
+
+        Usuario usuarioUpdate = new Usuario(usuarioCreate.get().getId(),
+                "DJ Arlindo Lindo", "comar@email.com", "agrtocomar", "https://i.imgur.com/FETvs28.jpg");
+
+        HttpEntity<Usuario> requisicao = new HttpEntity<Usuario>(usuarioUpdate);
+
+        ResponseEntity<Usuario> resposta = testRestTemplate
+                .withBasicAuth("root", "root")
+                .exchange("/usuarios/atualizar", HttpMethod.PUT, requisicao, Usuario.class);
+
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        boolean testeSenha = encoder.matches(usuarioUpdate.getSenha(), resposta.getBody().getSenha());
+
+        assertEquals(HttpStatus.OK, resposta.getStatusCode());
+        assertEquals(usuarioUpdate.getNome(), resposta.getBody().getNome());
+        assertEquals(usuarioUpdate.getUsuario(), resposta.getBody().getUsuario());
+        assertEquals(true, testeSenha);
+        assertEquals(usuarioUpdate.getFoto(), resposta.getBody().getFoto());
+    }
+	
+	@Test
+    @Order(4)
+    @DisplayName("Listar todos os Usuários")
+    public void deveMostrarTodosUsuarios() {
+
+		usuarioService.cadastraUsuario(new Usuario(0L, 
+                "Rodi Nei", "rodi@nei.com", "123456", "https://i.imgur.com/FETvs2O.jpg"));
+
+		usuarioService.cadastraUsuario(new Usuario(0L, 
+                "Claudemir", "claudim@email.com", "123456", "https://i.imgur.com/FETvs2O.jpg"));
+
+        ResponseEntity<String> resposta = testRestTemplate
+                .withBasicAuth("root", "root")
+                .exchange("/usuarios/all", HttpMethod.GET, null, String.class);
+
+        assertEquals(HttpStatus.OK, resposta.getStatusCode());
+    }
 	
 }
