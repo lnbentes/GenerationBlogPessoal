@@ -49,6 +49,7 @@ public class UsuarioService {
 				usuarioLogin.get().setFoto(usuario.get().getFoto());
 				usuarioLogin.get().setToken(geradorBasicToken(usuarioLogin.get().getUsuario(), usuarioLogin.get().getSenha()));
 				usuarioLogin.get().setSenha(usuario.get().getSenha());
+				usuarioLogin.get().setTipo(usuario.get().getTipo());
 				
 				// Depois que o usuarioLogin foi verificado e recebeu todos os dados vai retorna ele com o novo token de acesso
 				return usuarioLogin;

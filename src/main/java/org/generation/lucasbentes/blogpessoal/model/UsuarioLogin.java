@@ -16,6 +16,8 @@ public class UsuarioLogin {
 	
 	private String foto;
 	
+	private String tipo;
+	
 	private String token;  // O token que vai ser a chave de ascesso do usuario. a dependencia que gera
 	//A partir da senha, ele faz com que o usuario fique no login durante tuda a cessao
 
@@ -60,6 +62,14 @@ public class UsuarioLogin {
 	public void setFoto(String foto) {
 		this.foto = foto;
 	}
+	
+	public String getTipo() {
+		return tipo;
+	}
+
+	public void setTipo(String tipo) {
+		this.tipo = tipo;
+	}
 
 	public String getToken() {
 		return token;
@@ -69,4 +79,5 @@ public class UsuarioLogin {
 		this.token = token;
 	}
 
+	
 }
